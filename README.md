@@ -78,37 +78,37 @@ Visualization of the datasets is provided at https://drive.google.com/drive/fold
 Run our model 
 
 ```shell
-sh run_asd.sh
-sh run_sate.sh
-sh run_synthetic.sh
-sh run_ucr.sh
+sh runners\run_asd.sh
+sh runners\run_sate.sh
+sh runners\run_synthetic.sh
+sh runners\run_ucr.sh
 ```
 
 Run baseline models
 
 ```
-sh run_asd_other.sh
-sh run_sate_other.sh
-sh run_synthetic_other.sh
-sh run_ucr_other.sh
+sh runners\run_asd_other.sh
+sh runners\run_sate_other.sh
+sh runners\run_synthetic_other.sh
+sh runners\run_ucr_other.sh
 ```
 
 ### Reproduce the explainability experiment results
 
 ```shell
-sh run_asd_ex.sh
-sh run_sate_ex.sh
-sh run_synthetic_ex.sh
-sh run_ucr_ex.sh
+sh runners\run_asd_ex.sh
+sh runners\run_sate_ex.sh
+sh runners\run_synthetic_ex.sh
+sh runners\run_ucr_ex.sh
 ```
 
 ### Reproduce the robustness experiment results
 
 ```shell
-sh run_asd_pollute.sh
-sh run_sate_pollute.sh
-sh run_synthetic_pollute.sh
-sh run_ucr_pollute.sh
+sh runners\run_asd_pollute.sh
+sh runners\run_sate_pollute.sh
+sh runners\run_synthetic_pollute.sh
+sh runners\run_ucr_pollute.sh
 ```
 
 ## Acknowledgement 
