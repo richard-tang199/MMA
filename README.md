@@ -2,7 +2,7 @@
 This repository is the implementation of "MLP-Mixer based Masked Autoencoders Are Effective,Explainable and Robust for Time Series Anomaly Detection". We propose the MMA framework to achieve effective, explainable, and robust time series anomaly detection. 
 ## MMA model architecture
 
-<img src="imgs\figure4.png" style="zoom:70%;">
+<img src="imgs\figure4.png" width="70%">
 
 ## Main results
 
@@ -10,11 +10,11 @@ This repository is the implementation of "MLP-Mixer based Masked Autoencoders Ar
 
 Results on multivariate datasets
 
-<img src="imgs\mul_result.png" style="zoom:70%;">
+<img src="imgs\mul_result.png" width="70%">
 
 Results on the univariate time series dataset: the UCR Archive
 
-<img src="imgs\uni_result.png" style="zoom:50%;">
+<img src="imgs\uni_result.png" width="50%">
 
 ###  Explainability
 
@@ -33,6 +33,7 @@ The performance of models under different level of training set contamination
 The detection results on the UCR dataset
 
 <img src="imgs\figure9.png">
+
 ## Usage
 
 ### Setup
