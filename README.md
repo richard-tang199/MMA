@@ -4,7 +4,7 @@ This repository is the implementation of "MLP-Mixer based Masked Autoencoders Ar
 ## MMA model architecture
 
 <div align=center>
-<img src="imgs\figure4.png" width="70%">
+<img src="imgs\figure4.png" width="90%">
 </div>
 
 ## Main results
@@ -14,7 +14,7 @@ This repository is the implementation of "MLP-Mixer based Masked Autoencoders Ar
 Results on multivariate datasets
 
 <div align=center>
-<img src="imgs\mul_result.png" width="70%" />
+<img src="imgs\mul_result.png" />
 </div>
 
 Results on the univariate time series dataset: the UCR Archive
