@@ -20,7 +20,7 @@ Results on multivariate datasets
 Results on the univariate time series dataset: the UCR Archive
 
 <div align=center>
-<img src="imgs\uni_result.png" width="50%" />
+<img src="imgs\uni_result_new.png" width="50%" />
 </div>
 
 ###  Explainability
