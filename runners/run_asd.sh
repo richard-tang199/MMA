@@ -6,6 +6,7 @@ args=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12")
 window_length=("1024")
 
 # ablation analysis
+# if you want to do ablation analysis, you change model_name to the following line
 #model_name=("PatchDetector" "PatchAttention" "PatchGru")
 model_name=("PatchContrast")
 

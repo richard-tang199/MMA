@@ -1,5 +1,6 @@
 # MMA
-This repository is the implementation of "MLP-Mixer based Masked Autoencoders Are Effective,Explainable and Robust for Time Series Anomaly Detection". We propose the MMA framework to achieve effective, explainable, and robust time series anomaly detection. 
+
+This repository is the implementation of "MLP-Mixer based Masked Autoencoders Are Effective,Explainable and Robust for Time Series Anomaly Detection". We propose the MMA framework to achieve effective, explainable, and robust time series anomaly detection.
 
 ## MMA model architecture
 
@@ -9,7 +10,7 @@ This repository is the implementation of "MLP-Mixer based Masked Autoencoders Ar
 
 ## Main results
 
-###  Effectiveness
+### Effectiveness
 
 Results on multivariate datasets
 
@@ -23,7 +24,7 @@ Results on the univariate time series dataset: the UCR Archive
 <img src="imgs\uni_result_new.png" width="50%" />
 </div>
 
-###  Explainability
+### Explainability
 
 The explainability evaluation results on top 5 performing deep learning methods.
 
@@ -31,7 +32,7 @@ The explainability evaluation results on top 5 performing deep learning methods.
 <img src="imgs\figure7.png">
 </div>
 
-###  Robustness
+### Robustness
 
 The performance of models under different level of training set contamination
 
@@ -59,15 +60,15 @@ conda activate MMA
 pip install -r requirements.txt
 ```
 
-###  Prepare datasets
+### Prepare datasets
 
 Download datasets from this link: [ano_dataset](https://drive.google.com/drive/folders/1vAujAC9cArVJRMBQbLJCSbZh-r77r6wi?usp=sharing) and put them in the ano_dataset folder.
 
 ```
 ├───ano_dataset
-│   ├───ASD
-│   ├───sate
-│   ├───synthetic
+�?   ├───ASD
+�?   ├───sate
+�?   ├───synthetic
 └───└───UCR
 ```
 
@@ -75,7 +76,16 @@ Visualization of the datasets is provided at https://drive.google.com/drive/fold
 
 ### Reproduce the effectiveness experiment results
 
-Run our model 
+It is worth noting that when writing the code, we defined the model name as PatchContrast. However, when writing the paper, we found that this name was too long, so we renamed it to MMA. The table below shows the corresponding model names in the paper and in the code for ablation studies.
+
+| Name in paper   | Name in code   |
+| :-------------- | :------------- |
+| MMA             | PatchContrast  |
+| MMA_GRU         | PatchGru       |
+| MMA_Transformer | PatchAttention |
+| MMA w/o CL      | PatchDetector  |
+
+Run our model
 
 ```shell
 sh runners\run_asd.sh
@@ -92,6 +102,8 @@ sh runners\run_sate_other.sh
 sh runners\run_synthetic_other.sh
 sh runners\run_ucr_other.sh
 ```
+
+For ablation experiments and parameter sensitivity analysis, please refer to the instructions in runners\run_asd.sh
 
 ### Reproduce the explainability experiment results
 
@@ -111,13 +123,10 @@ sh runners\run_synthetic_pollute.sh
 sh runners\run_ucr_pollute.sh
 ```
 
-## Acknowledgement 
+## Acknowledgement
 
 We appreciate the following github repo very much for the valuable code base
 
 https://github.com/PatchTST/PatchTST
 
 https://github.com/ibm-granite/granite-tsfm
-
-
-
