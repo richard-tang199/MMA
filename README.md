@@ -1,4 +1,4 @@
-# MMA
+﻿# MMA
 
 This repository is the implementation of "MLP-Mixer based Masked Autoencoders Are Effective,Explainable and Robust for Time Series Anomaly Detection". We propose the MMA framework to achieve effective, explainable, and robust time series anomaly detection.
 
@@ -65,11 +65,11 @@ pip install -r requirements.txt
 Download datasets from this link: [ano_dataset](https://drive.google.com/drive/folders/1vAujAC9cArVJRMBQbLJCSbZh-r77r6wi?usp=sharing) and put them in the ano_dataset folder.
 
 ```
-├───ano_dataset
-�?   ├───ASD
-�?   ├───sate
-�?   ├───synthetic
-└───└───UCR
+├─ano_dataset
+├───ASD
+├───sate   
+├───synthetic
+└───UCR
 ```
 
 Visualization of the datasets is provided at https://drive.google.com/drive/folders/1ZmOJ-lAN0FfgDr6unwsU2LLubdQovv1x?usp=sharing
