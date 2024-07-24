@@ -9,7 +9,7 @@ import torch
 from toolkit.result_plot import recon_plot
 import argparse
 from toolkit.load_dataset import load_dataset, load_pollute_dataset
-from toolkit.load_config_data_model import get_dataloader, get_period
+from toolkit.load_config_data_model import get_dataloader, determine_window_patch_size
 from toolkit.get_anomaly_score import AnomalyScoreCalculator
 from evaluation.evaluate import evaluate, EfficiencyResult
 import json
@@ -48,6 +48,8 @@ if __name__ == "__main__":
     data_name = args.data_name
     args.smoother_window_size = None
     group = args.group
+    
+    raw_train_data, raw_test_data, raw_test_labels = load_dataset(data_name, args.group)
 
     if model_name == "TranAD":
         args.window_length = 10
@@ -77,9 +79,8 @@ if __name__ == "__main__":
     if args.data_name == "UCR":
         args.figure_length, args.figure_width = 160, 20
         args.group = args.group.zfill(3)
-        args.smoother_window_size = 80
-
-    raw_train_data, raw_test_data, raw_test_labels = load_dataset(data_name, args.group)
+        _, _, main_period = determine_window_patch_size(raw_train_data)    
+        args.smoother_window_size = main_period
 
     if model_name == "MP" or model_name == "DAMP":
         args.window_length = get_period(raw_train_data)

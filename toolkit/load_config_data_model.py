@@ -7,33 +7,41 @@ import torch
 from model.patch_detector import *
 import matplotlib.pyplot as plt
 
+def find_length(data):
+    if len(data.shape) > 1:
+        return 0
+    data = data[:min(200000, len(data))]
 
-def determine_window_patch_size(train_data: np.ndarray):
-    if len(train_data.shape) > 1:
-        input_data = train_data.squeeze(-1)
-    else:
-        input_data = train_data
-    input_fft = np.fft.fft(input_data)
-    freq = np.fft.fftfreq(len(input_data), 1)
-    fft_mag = np.abs(input_fft)
-    pos_freq = freq[freq > 0.001]
-    pos_fft_mag = fft_mag[freq > 0.001]
-    peak_freq = pos_freq[np.argmax(pos_fft_mag)]
-    # plt.subplot(2, 1, 1)
-    # plt.plot(pos_freq, pos_fft_mag)
-    # plt.subplot(2, 1, 2)
-    # plt.plot(input_data)
-    # plt.savefig("fft.png")
+    base = 3
+    auto_corr = acf(data, nlags=400, fft=True)[base:]
 
-    main_period = 1 / peak_freq
+    local_max = argrelextrema(auto_corr, np.greater)[0]
+    try:
+        max_local_max = np.argmax([auto_corr[lcm] for lcm in local_max])
+        if local_max[max_local_max] < 20 or local_max[max_local_max] > 1000:
+            freq, power = periodogram(data)
+            period = int(1 / freq[np.argmax(power)])
+        else:
+            period = local_max[max_local_max] + base
+    except:
+        freq, power = periodogram(data)
+        period = int(1 / freq[np.argmax(power)])
+
+    return period
+
+def determine_window_patch_size(train_data: np.ndarray, multiple=8):
+    input_data = train_data.squeeze(-1)
+    main_period = find_length(input_data)
     patch_size = int(np.ceil(main_period / 8))
-    window_size = patch_size * 8 * 8
+    if patch_size == 0:
+        patch_size = 1
+    window_size = patch_size * multiple
 
     data_length = len(input_data)
     if data_length < window_size:
-        window_size = patch_size * 8 * 3
+        window_size = data_length
 
-    return window_size, patch_size
+    return window_size, patch_size, main_period
 
 
 def get_period(train_data: np.ndarray):
