@@ -40,3 +40,5 @@ tsfresh==0.20.1
 tslearn==0.6.3
 tvm==1.0.0
 ujson==5.8.0
+s2gg==1.0.2
+
