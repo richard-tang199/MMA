@@ -11,14 +11,15 @@ from toolkit.get_anomaly_score import AnomalyScoreCalculator
 from evaluation.evaluate import evaluate, EfficiencyResult
 import json
 from TSB_UAD.utils.slidingWindows import find_length
-from TSB_UAD.models.feature import Window
-from TSB_UAD.models.sand import SAND
+# from TSB_UAD.models.feature import Window
+# from TSB_UAD.models.sand import SAND
 import warnings
+from s2gpp import Series2GraphPP
 
 warnings.filterwarnings("ignore")
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_name', type=str, default="NormA")
-parser.add_argument('--group', type=str, default="1", help='group number')
+parser.add_argument('--model_name', type=str, default="Series2Graph")
+parser.add_argument('--group', type=str, default="8", help='group number')
 parser.add_argument("--learning_rate", type=float, default=2e-3, help="learning rate")
 parser.add_argument('--data_name', type=str, default='UCR', help='dataset name')
 parser.add_argument("--window_length", type=int, default=100, help="window length")
@@ -66,26 +67,11 @@ if __name__ == "__main__":
         os.makedirs(output_dir)
 
     if model_name == "SAND":
-        model = SAND(pattern_length=args.window_length, subsequence_length=4 * args.window_length)
+        model = SAND(pattern_length=50, subsequence_length=75)
         data = np.concatenate((raw_train_data, raw_test_data), axis=0).astype(np.float64)
 
-        bach_size = 30 * args.window_length
-        init_length = 50 * args.window_length
-
-        if bach_size > len(data):
-            bach_size = len(data)
-
-        if init_length > len(data):
-            init_length = len(data)
-
         start = time.time()
-        model.fit(X=data,
-                  online=True,
-                  alpha=0.5,
-                  batch_size=bach_size,
-                  init_length=init_length,
-                  overlaping_rate=int(4 * args.window_length),
-                  )
+        model.fit(X=data, overlaping_rate=int(1.5 * args.window_length))
         duration = time.time() - start
 
         score = model.decision_scores_
@@ -100,12 +86,26 @@ if __name__ == "__main__":
         test_data = raw_test_data
         threshold = test_result.best_threshold_wo_pa
         train_anomaly_score = None
-    elif model_name == "NormA":
-        file_name = os.listdir(f"other_models/NormA/{args.group}")
-        test_anomaly_score = np.loadtxt(f"other_models/NormA/{args.group}/{file_name[0]}")
-        raw_test_labels = raw_test_labels[:len(test_anomaly_score)]
-        raw_test_data = raw_test_data[:len(test_anomaly_score)]
-        print(test_anomaly_score)
+
+    elif model_name == "Series2Graph":
+        model = Series2GraphPP(pattern_length=args.window_length, query_length=2 * args.window_length, self_correction=True)
+        # data = np.concatenate((raw_train_data, raw_test_data), axis=0).astype(np.float64)
+        start = time.time()
+        score = model.fit_predict(raw_test_data[:, np.newaxis])
+        duration = time.time() - start
+        test_anomaly_score = score
+        # test_anomaly_score = MinMaxScaler(feature_range=(0, 1)).fit_transform(test_anomaly_score.reshape(-1, 1)).ravel()
+        raw_test_labels = raw_test_labels[: len(test_anomaly_score)]
+        raw_test_data = raw_test_data[: len(test_anomaly_score)]
+        test_result = evaluate(test_anomaly_score, raw_test_labels, pa=True)
+        recon_train = None
+        recon_test = None
+        flops = 0
+        params = 0
+        train_data = raw_train_data
+        test_data = raw_test_data
+        threshold = test_result.best_threshold_wo_pa
+        train_anomaly_score = None
 
     train_data = train_data[:, np.newaxis]
     test_data = test_data[:, np.newaxis]
