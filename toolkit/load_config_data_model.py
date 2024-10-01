@@ -1,15 +1,16 @@
 from config.patchDetectorConfig import *
 from config.datasetTrainConfig import *
-import numpy as np
 from toolkit.load_dataset import SequenceWindowConversion
 from torch.utils.data import TensorDataset, DataLoader
-import torch
 from model.patch_detector import *
-import matplotlib.pyplot as plt
+from scipy.signal import argrelextrema
+from statsmodels.tsa.stattools import acf
+from scipy.signal import periodogram
+
 
 def find_length(data):
     if len(data.shape) > 1:
-        return 0
+        data = data.flatten()
     data = data[:min(200000, len(data))]
 
     base = 3
@@ -27,12 +28,19 @@ def find_length(data):
         freq, power = periodogram(data)
         period = int(1 / freq[np.argmax(power)])
 
+    if period > 10000:
+        period = 400
+
     return period
 
-def determine_window_patch_size(train_data: np.ndarray, multiple=8):
-    input_data = train_data.squeeze(-1)
-    main_period = find_length(input_data)
-    patch_size = int(np.ceil(main_period / 8))
+
+def determine_window_patch_size(train_data: np.ndarray, patch_num=8, multiple=32):
+    if len(train_data.shape) > 1:
+        input_data = train_data.squeeze(-1)
+    else:
+        input_data = train_data
+    main_period = find_length(train_data)
+    patch_size = int(np.ceil(main_period / patch_num))
     if patch_size == 0:
         patch_size = 1
     window_size = patch_size * multiple
@@ -44,20 +52,9 @@ def determine_window_patch_size(train_data: np.ndarray, multiple=8):
     return window_size, patch_size, main_period
 
 
-def get_period(train_data: np.ndarray):
-    input_data = train_data.squeeze(-1)
-    input_fft = np.fft.fft(input_data)
-    freq = np.fft.fftfreq(len(input_data), 1)
-    fft_mag = np.abs(input_fft)
-    pos_freq = freq[freq > 0.001]
-    pos_fft_mag = fft_mag[freq > 0.001]
-    peak_freq = pos_freq[np.argmax(pos_fft_mag)]
-
-    return int(1 / peak_freq)
-
 def load_train_config(args):
     if "sate" in args.data_name:
-        data_config = SateConfig(group_name=args.group)
+        data_config = SateConfig(group=args.group)
     elif args.data_name == "ASD":
         data_config = ASD_Config(group=args.group)
     elif args.data_name == "SMD":
@@ -74,6 +71,10 @@ def load_train_config(args):
     assert args.model_name in ["PatchDetector", "PatchAttention", "PatchDenoise", "PatchContrast", "PatchGru"]
 
     if args.model_name in ["PatchDetector", "PatchContrast"]:
+        window_stride = (args.window_length // 8)
+        if window_stride == 0:
+            window_stride = 1
+
         train_config = PatchDetectorConfig(
             num_epochs=data_config.num_epochs,
             learning_rate=args.learning_rate,
@@ -81,7 +82,7 @@ def load_train_config(args):
             remove_anomaly=args.remove_anomaly,
             window_length=args.window_length,
             patch_length=data_config.patch_size,
-            window_stride=args.window_length // 8,
+            window_stride=window_stride,
             num_channels=data_config.num_channels,
             d_model=data_config.d_model,
             mode=data_config.mode,
@@ -137,7 +138,7 @@ def get_dataloader(data: np.ndarray, batch_size: int, window_length: int,
     assert mode in ["train", "test"]
     length = data.shape[0]
     if mode == "train":
-        stride_size = 2 * (length // 4000)
+        stride_size = 2 * (length // 2000)
         if stride_size == 0:
             stride_size = 2
         elif stride_size > window_length:
@@ -161,7 +162,8 @@ def get_dataloader(data: np.ndarray, batch_size: int, window_length: int,
     data_loader = DataLoader(
         dataset=dataset,
         batch_size=batch_size,
-        shuffle=if_shuffle
+        shuffle=if_shuffle,
+        drop_last=False
     )
 
     return data_loader, window_converter

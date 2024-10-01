@@ -41,7 +41,7 @@ def recon_plot(save_path: str,
     """
     @type threshold: object
     @param font_size:
-    @param figure_wid
+    @param figure_width:
     @param figure_length:
     @param gap: axis gap
     @param save_path: save path/ png file name
@@ -108,8 +108,8 @@ def recon_plot(save_path: str,
         # plot train label
         if train_anomaly_segments is not None:
             for seg in train_anomaly_segments:
-                if seg[0] == seg[1]:
-                    axs[dim - 1][0].axvline(x=seg[0], color='red', alpha=0.1)
+                if seg[0] == seg[1] or seg[1] - seg[0] == 1:
+                    axs[dim - 1][0].axvline(x=seg[0], color='red', alpha=1, linewidth=2)
                 else:
                     axs[dim - 1][0].axvspan(seg[0], seg[1], facecolor='red', alpha=0.3)
 
@@ -157,7 +157,7 @@ def recon_plot(save_path: str,
     if train_anomaly_segments is not None:
         for seg in train_anomaly_segments:
             if seg[0] == seg[1]:
-                axs[-1][0].axvline(x=seg[0], color='red', alpha=1, linewidth=2)
+                axs[-1][0].axvline(x=seg[0], color='red', alpha=0.1)
             else:
                 axs[-1][0].axvspan(seg[0], seg[1], facecolor='red', alpha=0.3)
 
@@ -279,7 +279,7 @@ def score_plot(save_path: str,
         if train_anomaly_segments is not None:
             for seg in train_anomaly_segments:
                 if seg[0] == seg[1]:
-                    axs[dim - 1][0].axvline(x=seg[0], color='red', alpha=0.1)
+                    axs[dim - 1][0].axvline(x=seg[0], color='red', alpha=1, linewidth=2)
                 else:
                     axs[dim - 1][0].axvspan(seg[0], seg[1], facecolor='red', alpha=0.3)
 
@@ -302,7 +302,7 @@ def score_plot(save_path: str,
         if test_anomaly_segments is not None:
             for seg in test_anomaly_segments:
                 if seg[0] == seg[1]:
-                    axs[dim - 1][1].axvline(x=seg[0], color='red', alpha=0.1)
+                    axs[dim - 1][1].axvline(x=seg[0], color='red', alpha=1, linewidth=2)
                 else:
                     axs[dim - 1][1].axvspan(seg[0], seg[1], facecolor='red', alpha=0.3)
 
@@ -362,9 +362,6 @@ def score_plot(save_path: str,
 
 
 if __name__ == "__main__":
-    segments = get_segments(np.array([1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1]))
+    segments = get_segments(np.array([1, 1, 0, 0, 1, 0, 1, 1, 1, 1]))
     print(segments)
-    # raw_train_data, raw_test_data, labels = load_dataset(data_name="UCR", group="235")
-    # recon_plot(save_path="sample.png", train_data=raw_train_data, test_data=raw_test_data, test_label=labels, gap=400)
-    # print(segments)
-    # print("finished")
+    print("finished")
