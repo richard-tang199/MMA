@@ -29,7 +29,7 @@ Results on the univariate time series dataset: the UCR Archive
 The explainability evaluation results on top 5 performing deep learning methods.
 
 <div align=center>
-<img src="imgs\figure7.png">
+<img src="imgs\explain.png">
 </div>
 
 ### Robustness
@@ -37,7 +37,7 @@ The explainability evaluation results on top 5 performing deep learning methods.
 The performance of models under different level of training set contamination
 
 <div align=center>
-<img src="imgs\figure8.png">
+<img src="imgs\robustness.png">
 </div>
 
 ### Case study
@@ -45,7 +45,7 @@ The performance of models under different level of training set contamination
 The detection results on the UCR dataset
 
 <div align=center>
-<img src="imgs\figure9.png">
+<img src="imgs\cases.png">
 </div>
 
 ## Usage
