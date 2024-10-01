@@ -23,8 +23,8 @@ torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_name', type=str, default="NormFAAE")
-parser.add_argument('--group', type=str, default="239", help='group number')
+parser.add_argument('--model_name', type=str, default="PatchAD")
+parser.add_argument('--group', type=str, default="real_satellite_data_1", help='group number')
 parser.add_argument("--learning_rate", type=float, default=2e-3, help="learning rate")
 parser.add_argument('--data_name', type=str, default='synthetic', help='dataset name')
 parser.add_argument("--window_length", type=int, default=100, help="window length")
@@ -35,7 +35,7 @@ parser.add_argument('--figure_length', type=int, default=60, help="number of wor
 parser.add_argument('--figure_width', type=int, default=20, help="number of workers for dataloader")
 parser.add_argument('--anomaly_mode', type=str, default="error", help="anomaly mode")  # "error" or "dynamic"
 parser.add_argument('--mode', type=str, default="normal", help="normal or robust verification")
-parser.add_argument("--anomaly_ratio", type=float, default=0)
+parser.add_argument("--anomaly_ratio", type=float, default=2.0)
 
 if __name__ == "__main__":
     sys.path.append("other_models")
@@ -47,8 +47,9 @@ if __name__ == "__main__":
     model_name = args.model_name
     data_name = args.data_name
     args.smoother_window_size = None
+    if data_name == "UCR":
+        args.group = args.group.zfill(3)
     group = args.group
-    
     raw_train_data, raw_test_data, raw_test_labels = load_dataset(data_name, args.group)
 
     if model_name == "TranAD":
@@ -67,25 +68,35 @@ if __name__ == "__main__":
         args.window_length = 120
     elif model_name == "MAUT":
         args.window_length = 100
+        args.num_epochs = 100
     elif model_name == "usad":
         args.window_length = 5
         args.num_epochs = 100
     elif model_name == "cad":
         args.window_length = 20
         args.num_epochs = 30
+    elif model_name == "PatchAD":
+        args.window_length = 105
+        args.num_epochs = 20
 
     if args.data_name == "SMD":
         args.figure_width = 40
     if args.data_name == "UCR":
         args.figure_length, args.figure_width = 160, 20
-        args.group = args.group.zfill(3)
-        _, _, main_period = determine_window_patch_size(raw_train_data)    
+        _, _, main_period = determine_window_patch_size(raw_train_data)
+        if args.group == "220":
+            main_period = 400
         args.smoother_window_size = main_period
 
-    if model_name == "MP" or model_name == "DAMP":
-        args.window_length = get_period(raw_train_data)
+    if model_name == "MP" or model_name == "DAMP" or model_name == "KMeans":
+        if args.data_name == "UCR":
+            args.window_length = main_period
+        else:
+            args.window_length = 20
 
     if args.mode != "normal":
+        if args.mode == "realistic":
+            args.anomaly_ratio = int(args.anomaly_ratio)
         raw_train_data, raw_test_data, raw_train_labels, raw_test_labels = load_pollute_dataset(
             data_name=args.data_name,
             group=args.group,
@@ -100,11 +111,11 @@ if __name__ == "__main__":
         raw_train_data = raw_train_data[:, None]
         raw_test_data = raw_test_data[:, None]
 
-    output_dir = (f"output/{model_name}/{data_name}/"
+    output_dir = (f"output/{model_name}/{data_name}/{args.mode}/"
                   f"{args.mode}_{args.anomaly_ratio}/window_length_{args.window_length}")
 
     if data_name in ["ASD", "SMD", "UCR", "sate"]:
-        output_dir = (f"output/{model_name}/{data_name}/"
+        output_dir = (f"output/{model_name}/{data_name}/{args.mode}/"
                       f"{args.mode}_{args.anomaly_ratio}/{data_name}_{group}/window_length_{args.window_length}")
 
     if not os.path.exists(output_dir):
@@ -274,7 +285,7 @@ if __name__ == "__main__":
         model = MTAD_GAT(**configs.__dict__)
         model = model.to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=configs.init_lr)
-        model.fit(train_loader=train_loader, epochs=args.num_epochs, optimizer=optimizer)
+        duration_list = model.fit(train_loader=train_loader, epochs=args.num_epochs, optimizer=optimizer)
         predict_train, recon_train_0 = model.predict(val_loader)
 
         start_time = time.time()
@@ -491,7 +502,7 @@ if __name__ == "__main__":
                                                             window_length=args.window_length,
                                                             window_stride=args.window_length,
                                                             mode="test")
-        model.fit(train_loader=train_loader, epochs=args.num_epochs, optimizer=optimizer)
+        duration_list = model.fit(train_loader=train_loader, epochs=args.num_epochs, optimizer=optimizer)
         recon_train = model.predict(valid_loader)
         recon_train = valid_window_converter.windows_to_sequence(recon_train)
 
@@ -601,7 +612,7 @@ if __name__ == "__main__":
         model = MMoE(n_multiv=num_channels, window_size=args.window_length - 3)
         model = model.to(device)
 
-        model.fit(train_loader=train_loader, epochs=args.num_epochs)
+        duration_list = model.fit(train_loader=train_loader, epochs=args.num_epochs)
 
         recon_train = model.predict(val_loader)
         start_time = time.time()
@@ -627,6 +638,62 @@ if __name__ == "__main__":
 
         test_data = raw_test_data
         train_data = raw_train_data
+        threshold = test_result.best_threshold_wo_pa
+
+    elif model_name == "PatchAD":
+        from PatchAD.patch_ad import Solver
+
+        _, num_channels = raw_train_data.shape
+
+        train_loader, _ = get_dataloader(raw_train_data,
+                                         batch_size=args.batch_size,
+                                         window_length=args.window_length,
+                                         mode="train",
+                                         if_shuffle=True)
+        val_loader, valid_window_converter = get_dataloader(raw_train_data,
+                                                            batch_size=args.batch_size,
+                                                            window_length=args.window_length,
+                                                            window_stride=args.window_length,
+                                                            mode="test",
+                                                            if_shuffle=False)
+        test_loader, test_window_converter = get_dataloader(raw_test_data,
+                                                            batch_size=args.batch_size,
+                                                            window_length=args.window_length,
+                                                            window_stride=args.window_length,
+                                                            mode="test",
+                                                            if_shuffle=False)
+
+        model = Solver(epochs=args.num_epochs, window_size=args.window_length, channels=num_channels)
+        model.fit(train_loader=train_loader)
+
+        train_anomaly_score = model.test(test_loader=val_loader)
+        train_anomaly_score = valid_window_converter.windows_to_sequence(train_anomaly_score)
+        test_anomaly_score = model.test(test_loader=test_loader)
+        test_anomaly_score = test_window_converter.windows_to_sequence(test_anomaly_score)
+        # train_anomaly_score = train_anomaly_score.squeeze(-1)
+        # test_anomaly_score = test_anomaly_score.squeeze(-1)
+
+        anomaly_score_calculator = AnomalyScoreCalculator(mode="error")
+        test_score = anomaly_score_calculator.calculate_anomaly_score(
+            raw_train_data=np.zeros_like(train_anomaly_score),
+            raw_test_data=np.zeros_like(test_anomaly_score),
+            recon_train_data=train_anomaly_score,
+            recon_test_data=test_anomaly_score
+        )
+        test_anomaly_score = test_score.test_score_all
+        train_anomaly_score = test_score.train_score_all
+
+        train_anomaly_score = MinMaxScaler().fit_transform(train_anomaly_score.reshape(-1, 1)).flatten()
+        test_anomaly_score = MinMaxScaler().fit_transform(test_anomaly_score.reshape(-1, 1)).flatten()
+
+        test_data = raw_test_data
+        train_data = raw_train_data
+        recon_train = None
+        recon_test = None
+        flops = 0
+        params = 0
+        duration_list = [0]
+        test_result = evaluate(test_anomaly_score, raw_test_labels[:len(test_anomaly_score)], pa=True)
         threshold = test_result.best_threshold_wo_pa
 
     elif model_name == "MP":
@@ -682,6 +749,34 @@ if __name__ == "__main__":
         test_data = raw_test_data
         threshold = test_result.best_threshold_wo_pa
         train_anomaly_score = None
+
+    elif model_name == "KMeans":
+        from KMeans.ano_kmeans import KMeansAD
+
+        data = np.concatenate((raw_train_data, raw_test_data), axis=0)
+        model = KMeansAD(k=20, window_size=args.window_length, stride=1)
+        start_time = time.time()
+        anomaly_scores = model.fit_predict(data)
+        assert len(anomaly_scores) == len(data)
+        duration = time.time() - start_time
+
+        train_anomaly_score = anomaly_scores[:len(raw_train_data)]
+        test_anomaly_score = anomaly_scores[-len(raw_test_data):]
+
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        scaler.fit(train_anomaly_score.reshape(-1, 1))
+        train_anomaly_score = scaler.transform(train_anomaly_score.reshape(-1, 1)).flatten()
+        test_anomaly_score = scaler.fit_transform(test_anomaly_score.reshape(-1, 1)).flatten()
+
+        test_result = evaluate(test_anomaly_score, raw_test_labels, pa=True)
+        recon_train = None
+        recon_test = None
+        flops = 0
+        params = 0
+        duration_list = [duration]
+        train_data = raw_train_data
+        test_data = raw_test_data
+        threshold = test_result.best_threshold_wo_pa
     else:
         raise ValueError("Invalid model name")
 
@@ -696,7 +791,9 @@ if __name__ == "__main__":
     with open(os.path.join(output_dir, f"result.json"), "w") as f:
         json.dump(test_result.__dict__, f, indent=4)
 
-    efficiency_result = EfficiencyResult(test_time=duration, flops=flops, params=params)
+    efficiency_result = EfficiencyResult(test_time=duration, flops=flops, params=params,
+                                         average_epoch_time=np.median(duration_list),
+                                         all_training_time=np.sum(duration_list))
     efficiency_result = efficiency_result.__dict__
     with open(os.path.join(output_dir, f"efficiency_result.json"), "w") as f:
         json.dump(efficiency_result, f, indent=4)
@@ -706,6 +803,7 @@ if __name__ == "__main__":
         gap = (recon_train.shape[0] + recon_test.shape[0]) // 80
     else:
         gap = 400
+
     recon_plot(
         save_path=figure_save_path,
         gap=gap,
@@ -728,6 +826,7 @@ if __name__ == "__main__":
     np.save(os.path.join(output_dir, f"raw_test_data.npy"), test_data)
     np.save(os.path.join(output_dir, f"raw_test_labels.npy"), raw_test_labels)
     np.save(os.path.join(output_dir, f"test_anomaly_score.npy"), test_anomaly_score)
+    np.save(os.path.join(output_dir, f"train_anomaly_score.npy"), train_anomaly_score)
     np.save(os.path.join(output_dir, f"recon_test_data.npy"), recon_test)
 
     # save model
