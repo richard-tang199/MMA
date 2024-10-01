@@ -71,7 +71,7 @@ def load_train_config(args):
     assert args.model_name in ["PatchDetector", "PatchAttention", "PatchDenoise", "PatchContrast", "PatchGru"]
 
     if args.model_name in ["PatchDetector", "PatchContrast"]:
-        window_stride = (args.window_length // 8)
+        window_stride = (args.window_length // 4)
         if window_stride == 0:
             window_stride = 1
 
@@ -138,7 +138,7 @@ def get_dataloader(data: np.ndarray, batch_size: int, window_length: int,
     assert mode in ["train", "test"]
     length = data.shape[0]
     if mode == "train":
-        stride_size = 2 * (length // 2000)
+        stride_size = 2 * (length // 4000)
         if stride_size == 0:
             stride_size = 2
         elif stride_size > window_length:

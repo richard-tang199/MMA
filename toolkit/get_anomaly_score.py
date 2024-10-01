@@ -82,6 +82,7 @@ class AnomalyScoreCalculator:
         train_diff = np.abs(raw_train_data - recon_train_data)  # sequence_length, num_channels
         test_diff = np.abs(raw_test_data - recon_test_data)  # sequence_length, num_channels
 
+
         if self.if_normalize:
             mean_channel_diff_train = np.mean(train_diff, axis=0)
             train_channel_normalized = train_diff - mean_channel_diff_train

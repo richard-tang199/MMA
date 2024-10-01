@@ -1,7 +1,5 @@
 # -*-coding:utf-8-*-
 import numpy as np
-from numpy.array_api import float64
-
 from toolkit.spot.dspot import dspot
 from toolkit.spot.pot import pot
 from toolkit.spot.spot import spot
@@ -50,7 +48,6 @@ def find_threshold(training_anomaly_scores: np.ndarray, testing_anomaly_scores: 
     top_n_result[top_n_index] = 1
     top_n_threshold = testing_anomaly_scores[top_n_index[0]]
     top_n_threshold = np.array([top_n_threshold] * len(testing_anomaly_scores))
-    top_n_threshold = top_n_threshold.astype(float64)
 
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(30)

@@ -29,6 +29,6 @@ do
     python train_other_model.py --model_name MAUT --mode realistic --anomaly_ratio "$ratio" --num_epochs 100 --data_name "UCR" --group "$group"
     python train_other_model.py --model_name cad --mode realistic --anomaly_ratio "$ratio" --num_epochs 30 --data_name "UCR" --group "$group"
     python train_other_model.py --model_name mtad_gat --mode realistic --anomaly_ratio "$ratio" --num_epochs 50 --data_name "UCR" --group "$group"
-    python train_other_model.py --model_name "KMeans" --num_epochs 100 --data_name "UCR" --group "$group" --anomaly_ratio "$ratio"
+    python train_other_model.py --model_name KMeans --num_epochs 100 --data_name "UCR" --group "$group" --anomaly_ratio "$ratio"
   done
 done

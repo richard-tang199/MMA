@@ -171,7 +171,7 @@ if __name__ == "__main__":
     # get model
     model = get_model(args.model_name, train_config)
     optimizer = torch.optim.AdamW(model.parameters(), lr=train_config.learning_rate, weight_decay=1e-5)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 30, 0.99)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, len(train_loader), 0.95)
 
     total_train_loss = []
     total_valid_loss = []

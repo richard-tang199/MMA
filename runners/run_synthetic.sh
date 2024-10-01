@@ -12,8 +12,10 @@ do
   python train_other_model.py --model_name usad --num_epochs 100 --data_name "synthetic" --group "$group"
   python train_other_model.py --model_name NormFAAE  --num_epochs 300 --data_name "synthetic" --group "$group"
   python train_other_model.py --model_name FGANomaly  --num_epochs 100 --data_name "synthetic" --group "$group"
-  python train_other_model.py --model_name gdn --num_epochs 50 --data_name "ASD" --group "$group"
-  python train_other_model.py --model_name mtgflow --num_epochs 40 --data_name "ASD" --group "$group"
+  python train_other_model.py --model_name gdn --num_epochs 50 --data_name "synthetic" --group "$group"
+  python train_other_model.py --model_name mtgflow --num_epochs 40 --data_name "synthetic" --group "$group"
+  python train_other_model.py --model_name KMeans --num_epochs 100 --data_name "synthetic" --group "$g"
+  python train_other_model.py --model_name PatchAD --num_epochs 10 --data_name "synthetic" --group "$g"
 done
 
 

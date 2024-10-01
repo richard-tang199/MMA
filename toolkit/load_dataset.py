@@ -56,15 +56,7 @@ def load_dataset(data_name: str, group=None):
         data_dir = os.path.join("ano_dataset", "synthetic", "processed")
         train_data = np.loadtxt(os.path.join(data_dir, "synthetic_train.csv"), delimiter=",")
         test_data = np.loadtxt(os.path.join(data_dir, "synthetic_test.csv"), delimiter=",")
-        labels = np.loadtxt(os.path.join(data_dir, "synthetic_label.csv"), delimiter=",")
-        labels = labels.astype(int)
-        if group == "univariate":
-            data_dir = os.path.join("ano_dataset", "synthetic", "univariate")
-            train_data = np.loadtxt(os.path.join(data_dir, "synthetic_train.csv"), delimiter=",")
-            test_data = np.loadtxt(os.path.join(data_dir, "synthetic_test.csv"), delimiter=",")
-            labels = np.loadtxt(os.path.join(data_dir, "synthetic_label.csv"), delimiter=",", dtype=int)
-            train_data = train_data[:, np.newaxis]
-            test_data = test_data[:, np.newaxis]
+        labels = np.loadtxt(os.path.join(data_dir, "synthetic_label.csv"), delimiter=",", dtype=int)
 
     elif data_name == "GECCO":
         data_dir = os.path.join("ano_dataset", "GECCO", "processed")
@@ -175,9 +167,6 @@ def load_pollute_dataset(data_name: str, group=None, mode="realistic", ratio: fl
             data_dir = os.path.join("ano_dataset", data_name, "pollute")
             train_data = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_{mode}_{ratio}.npy"))
             train_label = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_label_{mode}_{ratio}.npy"))
-
-        train_data = train_data[:, np.newaxis]
-        test_data = test_data[:, np.newaxis]
 
     return (np.array(train_data, dtype=np.float32), np.array(test_data, dtype=np.float32),
             np.array(train_label, dtype=int), np.array(labels, dtype=int))
