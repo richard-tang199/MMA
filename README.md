@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 ### Prepare datasets
 
-Download datasets from this link: [ano_dataset](https://drive.google.com/drive/folders/1L2me0vvm39KsECm5P3FoFpRlGS0B75-t?usp=sharing) and put them in the ano_dataset folder.
+Download datasets from this link: [ano_dataset](https://drive.google.com/drive/folders/1L2me0vvm39KsECm5P3FoFpRlGS0B75-t) and put them in the ano_dataset folder.
 
 ```
 ├─ano_dataset
