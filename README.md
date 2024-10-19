@@ -18,7 +18,7 @@ Results on multivariate datasets
 <img src="imgs\mul_result.png" />
 </div>
 
-Results on the univariate time series dataset: the UCR Archive
+Results on the univariate time series dataset: the KDD21 dataset
 
 <div align=center>
 <img src="imgs\uni_result_new.png" width="50%" />
