@@ -75,16 +75,6 @@ Download datasets from this link: [ano_dataset](https://drive.google.com/drive/f
 Visualization of the datasets is provided at https://drive.google.com/drive/folders/1ZmOJ-lAN0FfgDr6unwsU2LLubdQovv1x?usp=sharing
 
 ### Reproduce the effectiveness experiment results
-
-It is worth noting that when writing the code, we defined the model name as PatchContrast. However, when writing the paper, we found that this name was too long, so we renamed it to MMA. The table below shows the corresponding model names in the paper and in the code for ablation studies.
-
-| Name in paper   | Name in code   |
-| :-------------- | :------------- |
-| MMA             | PatchContrast  |
-| MMA_GRU         | PatchGru       |
-| MMA_Transformer | PatchAttention |
-| MMA w/o CL      | PatchDetector  |
-
 Run our model
 
 ```shell
