@@ -57,18 +57,12 @@ def load_train_config(args):
         data_config = SateConfig(group=args.group)
     elif args.data_name == "ASD":
         data_config = ASD_Config(group=args.group)
-    elif args.data_name == "SMD":
-        data_config = SMD_Config(group=args.group)
     elif args.data_name == "synthetic":
         data_config = synthetic_Config()
-    elif args.data_name == "TELCO":
-        data_config = TELCO_Config()
     elif args.data_name == "UCR":
         data_config = UCR_Config(group=args.group)
     else:
         raise NotImplementedError
-
-    assert args.model_name in ["PatchDetector", "PatchAttention", "PatchDenoise", "PatchContrast", "PatchGru"]
 
     if args.model_name in ["PatchDetector", "PatchContrast"]:
         window_stride = (args.window_length // 4)
@@ -83,45 +77,6 @@ def load_train_config(args):
             window_length=args.window_length,
             patch_length=data_config.patch_size,
             window_stride=window_stride,
-            num_channels=data_config.num_channels,
-            d_model=data_config.d_model,
-            mode=data_config.mode,
-            anomaly_mode=args.anomaly_mode,
-        )
-    elif args.model_name == "PatchAttention":
-        train_config = PatchDetectorAttentionConfig(
-            num_epochs=args.num_epochs,
-            batch_size=args.batch_size,
-            remove_anomaly=args.remove_anomaly,
-            window_length=data_config.window_size,
-            patch_length=data_config.patch_size,
-            window_stride=data_config.stride,
-            num_channels=data_config.num_channels,
-            d_model=data_config.d_model,
-            mode=data_config.mode,
-            anomaly_mode=args.anomaly_mode
-        )
-    elif args.model_name == "PatchGru":
-        train_config = PatchDetectorGruConfig(
-            num_epochs=args.num_epochs,
-            batch_size=args.batch_size,
-            remove_anomaly=args.remove_anomaly,
-            window_length=data_config.window_size,
-            patch_length=data_config.patch_size,
-            window_stride=data_config.stride,
-            num_channels=data_config.num_channels,
-            d_model=data_config.d_model,
-            mode=data_config.mode,
-            anomaly_mode=args.anomaly_mode
-        )
-    elif args.model_name == "PatchDenoise":
-        train_config = PatchDetectorConfig(
-            num_epochs=data_config.num_epochs,
-            learning_rate=args.learning_rate,
-            batch_size=args.batch_size,
-            window_length=data_config.window_size,
-            patch_length=data_config.patch_size,
-            window_stride=data_config.stride,
             num_channels=data_config.num_channels,
             d_model=data_config.d_model,
             mode=data_config.mode,
@@ -172,12 +127,8 @@ def get_dataloader(data: np.ndarray, batch_size: int, window_length: int,
 def get_model(model_name: str, train_config):
     if model_name == "PatchDetector":
         model = PatchDetector(config=train_config)
-    elif model_name == "PatchAttention":
-        model = PatchDetectorAttention(config=train_config)
     elif model_name == "PatchContrast":
         model = PatchContrastDetector(config=train_config)
-    elif model_name == "PatchGru":
-        model = PatchDetectorGru(config=train_config)
     else:
         raise NotImplementedError
     model = model.to(train_config.device)

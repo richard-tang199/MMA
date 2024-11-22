@@ -16,8 +16,6 @@ class SateConfig:
         if self.group_name == "real_satellite_data_3":
             self.mode = "mix_channel"
 
-
-
 @dataclass
 class ASD_Config:
     group: int
@@ -31,33 +29,12 @@ class ASD_Config:
     mode: str = "common_channel"
 
 @dataclass
-class SMD_Config:
-    group: str
-    num_epochs: int = 101
-    window_size: int = 1024
-    patch_size: int = 16
-    num_channels: int = 38
-    stride: int = 250
-    d_model: int = 64
-    mode: str = "common_channel"
-
-@dataclass
 class synthetic_Config:
     num_epochs: int = 101
     window_size: int = 1024
     patch_size: int = 16
     num_channels: int = 5
     stride: int = 128
-    d_model: int = 64
-    mode: str = "common_channel"
-
-@dataclass
-class TELCO_Config:
-    window_size: int = 2048
-    num_epochs: int = 101
-    patch_size: int = 32
-    num_channels: int = 12
-    stride: int = 250
     d_model: int = 64
     mode: str = "common_channel"
 

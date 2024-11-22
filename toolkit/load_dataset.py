@@ -37,53 +37,11 @@ def load_dataset(data_name: str, group=None):
         with open(os.path.join(data_dir, f"omi-{group}_test_label.pkl"), "rb") as file:
             labels = pickle.load(file)
 
-    elif data_name == "SMD":
-        data_dir = os.path.join("ano_dataset", "SMD", "downsampled")
-
-        assert group in ['1-1', '1-6', '1-7', '2-1', '2-2', '2-7', '2-8', '3-3', '3-4', '3-6', '3-8', '3-11'], (
-            "group not found")
-
-        with open(os.path.join(data_dir, f"machine-{group}_train.pkl"), "rb") as file:
-            train_data = pickle.load(file)
-
-        with open(os.path.join(data_dir, f"machine-{group}_test.pkl"), "rb") as file:
-            test_data = pickle.load(file)
-
-        with open(os.path.join(data_dir, f"machine-{group}_test_label.pkl"), "rb") as file:
-            labels = pickle.load(file)
-
     elif data_name == "synthetic":
         data_dir = os.path.join("ano_dataset", "synthetic", "processed")
         train_data = np.loadtxt(os.path.join(data_dir, "synthetic_train.csv"), delimiter=",")
         test_data = np.loadtxt(os.path.join(data_dir, "synthetic_test.csv"), delimiter=",")
         labels = np.loadtxt(os.path.join(data_dir, "synthetic_label.csv"), delimiter=",", dtype=int)
-
-    elif data_name == "GECCO":
-        data_dir = os.path.join("ano_dataset", "GECCO", "processed")
-        train_data = np.load(os.path.join(data_dir, "NIPS_TS_Water_train.npy"))
-        test_data = np.load(os.path.join(data_dir, "NIPS_TS_Water_test.npy"))
-        labels = np.load(os.path.join(data_dir, "NIPS_TS_Water_test_label.npy"))
-
-    elif data_name == "PSM":
-        data_dir = os.path.join("ano_dataset", "PSM", "processed")
-        train_data = pd.read_csv(os.path.join(data_dir, "train.csv"), index_col=0, header=0).values
-        test_data = pd.read_csv(os.path.join(data_dir, "test.csv"), index_col=0, header=0).values
-        labels = pd.read_csv(os.path.join(data_dir, "test_label.csv"), index_col=0, header=0).values
-        train_data = np.nan_to_num(train_data)
-        test_data = np.nan_to_num(test_data)
-        labels = np.nan_to_num(labels)
-
-    elif data_name == "Swan":
-        data_dir = os.path.join("ano_dataset", "Swan", "processed")
-        train_data = np.load(os.path.join(data_dir, "NIPS_TS_Swan_train.npy"))
-        test_data = np.load(os.path.join(data_dir, "NIPS_TS_Swan_test.npy"))
-        labels = np.load(os.path.join(data_dir, "NIPS_TS_Swan_test_label.npy"))
-
-    elif data_name == "TELCO":
-        data_dir = os.path.join("ano_dataset", "TELCO", "processed")
-        train_data = np.load(os.path.join(data_dir, "train_data.npy"))[:8000, :]
-        test_data = np.load(os.path.join(data_dir, "test_data.npy"))
-        labels = np.load(os.path.join(data_dir, "test_label.npy"))
 
     elif data_name == "UCR":
         data_dir = os.path.join("ano_dataset", "UCR", "processed")
@@ -107,10 +65,9 @@ def load_pollute_dataset(data_name: str, group=None, mode="realistic", ratio: fl
         labels = np.loadtxt(os.path.join(data_dir, "synthetic_label.csv"), delimiter=",", dtype=int)
 
         if mode == "realistic":
-            ratio = int(ratio)
-            data_dir = os.path.join("ano_dataset", "synthetic", "new")
-            train_data = np.loadtxt(os.path.join(data_dir, f"synthetic_{ratio}_test.csv"), delimiter=",")
-            train_label = np.loadtxt(os.path.join(data_dir, f"synthetic_{ratio}_label.csv"), delimiter=",", dtype=int)
+            data_dir = os.path.join("ano_dataset", "synthetic", "pollute")
+            train_data = np.loadtxt(os.path.join(data_dir, f"synthetic_train_{mode}.csv"), delimiter=",")
+            train_label = np.loadtxt(os.path.join(data_dir, f"synthetic_train_label_{mode}.csv"), delimiter=",", dtype=int)
         elif mode == "simulated":
             data_dir = os.path.join("ano_dataset", "synthetic", "pollute")
             train_data = np.loadtxt(os.path.join(data_dir, f"synthetic_train_{mode}_{ratio}.csv"), delimiter=",")
@@ -122,11 +79,9 @@ def load_pollute_dataset(data_name: str, group=None, mode="realistic", ratio: fl
         labels = np.load(os.path.join(data_dir, f"{group}_labels.npy"))[:, 0]
 
         if mode == "realistic":
-            ratio = int(ratio)
-            data_dir = os.path.join("ano_dataset", data_name, "new")
-            train_data = np.load(os.path.join(data_dir, f"{group}_train_{mode}_{ratio}.npy"))
-            train_label = np.load(os.path.join(data_dir, f"{group}_train_label_{mode}_{ratio}.npy"))
-
+            data_dir = os.path.join("ano_dataset", data_name, group, "pollute")
+            train_data = np.load(os.path.join(data_dir, f"{group}_train_{mode}.npy"))
+            train_label = np.load(os.path.join(data_dir, f"{group}_train_label_{mode}.npy"))
         elif mode == "simulated":
             data_dir = os.path.join("ano_dataset", data_name, group, "pollute")
             train_data = np.load(os.path.join(data_dir, f"{group}_train_{mode}_{ratio}.npy"))
@@ -142,10 +97,9 @@ def load_pollute_dataset(data_name: str, group=None, mode="realistic", ratio: fl
             labels = pickle.load(file)
 
         if mode == "realistic":
-            ratio = int(ratio)
-            data_dir = os.path.join("ano_dataset", data_name, "new")
-            train_data = np.load(os.path.join(data_dir, f"omi-{group}_train_{mode}_{ratio}.npy"))
-            train_label = np.load(os.path.join(data_dir, f"omi-{group}_train_label_{mode}_{ratio}.npy"))
+            data_dir = os.path.join("ano_dataset", data_name, "pollute")
+            train_data = np.load(os.path.join(data_dir, f"omi-{group}_train_{mode}.npy"))
+            train_label = np.load(os.path.join(data_dir, f"omi-{group}_train_label_{mode}.npy"))
         elif mode == "simulated":
             data_dir = os.path.join("ano_dataset", data_name, "pollute")
             train_data = np.load(os.path.join(data_dir, f"omi-{group}_train_{mode}_{ratio}.npy"))
@@ -158,10 +112,9 @@ def load_pollute_dataset(data_name: str, group=None, mode="realistic", ratio: fl
         labels = np.load(os.path.join(data_dir, f"{group}_test_label.npy"))
 
         if mode == "realistic":
-            ratio = int(ratio)
-            data_dir = os.path.join("ano_dataset", data_name, "new")
-            train_data = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_{mode}_{ratio}.npy"))
-            train_label = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_label_{mode}_{ratio}.npy"))
+            data_dir = os.path.join("ano_dataset", data_name, "pollute")
+            train_data = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_{mode}.npy"))
+            train_label = np.load(os.path.join(data_dir, f"{data_name}-{group}_train_label_{mode}.npy"))
 
         elif mode == "simulated":
             data_dir = os.path.join("ano_dataset", data_name, "pollute")

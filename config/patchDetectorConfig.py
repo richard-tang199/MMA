@@ -32,7 +32,7 @@ class PatchDetectorConfig:
     dropout: float = 0.2
     norm_eps: float = 1e-5
     weight: float = 0.01
-    anomaly_mode: str = "dynamic"  # "error" or "dynamic"
+    anomaly_mode: str = "error"  # "error" or "dynamic"
 
     def __post_init__(self):
         self.stride = self.patch_length  # patch_stride
@@ -42,45 +42,3 @@ class PatchDetectorConfig:
         # self.mode: str = "mix_channel" if not self.channel_consistent else "common_channel"
         if self.masking_mode == "random":
             self.forward_times = 5
-
-
-@dataclass
-class PatchDetectorAttentionConfig(PatchDetectorConfig):
-    learning_rate: float = 2e-3
-    instance_normalization: bool = False
-    forward_times: int = 5
-    d_model: int = 64
-    remove_anomaly: bool = True
-    d_ff: int = 16  # FeedForward: multiple of d_model
-    self_attn_heads: int = 8  # MultiHeadAttention: number of heads
-    use_position_encoder: bool = True
-    attn_norm: str = "LayerNorm"  # Attention Norm: "LayerNorm" or "BatchNorm"
-    attn_dropout: float = 0.2  # Attention Dropout
-    res_attn: bool = True  # Residual Attention: True or False
-    num_layers: int = 3 # number of layers in the transformer
-    store_attn: bool = False  # Store Attention: True or False
-    positional_encoding_type: str = "random"  # "sincos" or "random"
-
-    def __post_init__(self):
-        super().__post_init__()
-
-
-@dataclass
-class PatchDetectorGruConfig(PatchDetectorConfig):
-    learning_rate: float = 1e-3
-    instance_normalization: bool = False
-    forward_times: int = 5
-    d_model: int = 64
-    num_layers: int = 3
-    expansion_factor: int = 1
-
-
-
-    def __post_init__(self):
-        super().__post_init__()
-
-
-
-if __name__ == '__main__':
-    config = PatchDetectorAttentionConfig()
-    print(config)

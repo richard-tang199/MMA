@@ -40,7 +40,7 @@ parser.add_argument('--remove_anomaly', type=int, default=1, help="whether to re
 parser.add_argument('--anomaly_mode', type=str, default="error", help="anomaly mode")  # "error" or "dynamic"
 parser.add_argument('--plot', type=bool, default=True, help="plot the result or not")
 parser.add_argument('--mode', type=str, default="normal", help="normal or robust verification")
-parser.add_argument("--anomaly_ratio", type=float, default=2)
+parser.add_argument("--anomaly_ratio", type=float, default=0.1)
 parser.add_argument("--multiple", type=int, default=32)
 parser.add_argument("--window_length", type=int, default=1024, help="window length")
 parser.add_argument("--use_tensorboard", type=bool, default=True, help="whether to use tensorboard or not")
@@ -82,8 +82,6 @@ if __name__ == "__main__":
     raw_train_labels = None
 
     if args.mode != "normal":
-        if args.mode == "realistic":
-            args.anomaly_ratio = int(args.anomaly_ratio)
         raw_train_data, raw_test_data, raw_train_labels, raw_test_labels = load_pollute_dataset(
             data_name=args.data_name,
             group=args.group,
@@ -92,6 +90,7 @@ if __name__ == "__main__":
         )
     else:
         args.anomaly_ratio = 0
+        raw_train_labels = np.zeros(raw_train_data.shape[0])
 
     if args.data_name == "UCR":
         train_config.window_length, train_config.patch_length, main_period = determine_window_patch_size(raw_train_data,
@@ -110,27 +109,19 @@ if __name__ == "__main__":
     print(train_config.__dict__)
     print(args.__dict__)
 
-    # TODO: add anomaly mode
-    output_dir = (
-        f"output/{model_name}/{data_name}/{args.mode}/{args.mode}_{args.anomaly_ratio}/"
-        f"window_len_{train_config.window_length}"
-        f"-d_model_{train_config.d_model}-patch_len_{train_config.patch_length}"
-        f"_remove_anomaly_{train_config.remove_anomaly}"
-        f"-mode_{train_config.masking_mode}-weight_{args.weight}")
-
     if data_name in ["ASD", "SMD", "sate"]:
         output_dir = (
             f"output/{model_name}/{data_name}/{args.mode}/{args.mode}_{args.anomaly_ratio}/{data_name}_{group}/"
             f"window_len_{train_config.window_length}-d_model_{train_config.d_model}-patch_len_{train_config.patch_length}"
             f"-remove_anomaly_{train_config.remove_anomaly}"
-            f"-mode_{train_config.masking_mode}-weight_{args.weight}")
+            f"-mode_{train_config.masking_mode}")
 
     if data_name == "UCR":
         output_dir = (
             f"output/{model_name}/{data_name}/{args.mode}/{args.mode}_{args.anomaly_ratio}/{data_name}_{group}/"
             f"{args.multiple}/d_model_{train_config.d_model}-patch_len_{train_config.patch_length}"
             f"-remove_anomaly_{train_config.remove_anomaly}"
-            f"-mode_{train_config.masking_mode}-weight_{args.weight}")
+            f"-mode_{train_config.masking_mode}")
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

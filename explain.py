@@ -52,6 +52,7 @@ if __name__ == '__main__':
         raise NotImplementedError("Invalid data name")
 
     if model_name == "PatchContrast":
+        # model save path need to be modified
         # model_path = 'output\\PatchContrast\\real_satellite_data_1\\window_len_512-d_model_64-patch_len_16_remove_anomaly_True-mode_common_channel-04-02-12-35'
         if data_name == "ASD":
             model_dir = os.path.join("output", "PatchContrast", "ASD_output", f"ASD_{group}")
