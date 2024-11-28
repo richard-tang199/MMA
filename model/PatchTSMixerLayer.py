@@ -6,10 +6,6 @@ from torch import Tensor
 from dataclasses import dataclass
 from model.utility import PositionalEncoding
 
-
-
-
-
 @dataclass
 class PatchTSMixerEncoderOutput:
     """

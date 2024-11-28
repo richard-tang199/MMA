@@ -4,7 +4,6 @@ from torch.utils.data import DataLoader
 from model.patch_detector import PatchDetector, PatchDetectorOutput
 import os
 
-
 def train_one_epoch(current_epoch: int,
                     model: PatchDetector,
                     train_loader: DataLoader,
