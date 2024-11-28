@@ -1,7 +1,7 @@
 #!/bin/bash
 
 groups=("1")
-ratios=("0.02" "0.05" "0.1" "0.15" "0.2")
+ratios=("0.02" "0.05" "0.1" "0.15")
 
 for group in "${groups[@]}"
 do

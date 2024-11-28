@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 groups=("real_satellite_data_1" "real_satellite_data_2")
-ratios=("0.02" "0.05" "0.1" "0.15" "0.2")
+ratios=("0.02" "0.05" "0.1" "0.15")
 
 for group in "${groups[@]}"
 do

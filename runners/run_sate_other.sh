@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-group_list=("real_satellite_data_1" "real_satellite_data_2" "real_satellite_data_3")
+group_list=("real_satellite_data_1" "real_satellite_data_2")
 
 for group in "${group_list[@]}"
 do
