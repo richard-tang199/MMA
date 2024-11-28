@@ -10,8 +10,6 @@ This repository is the implementation of "MLP-Mixer based Masked Autoencoders Ar
 
 ## Main results
 
-### Effectiveness
-
 Results on multivariate datasets
 
 <div align=center>
@@ -22,22 +20,6 @@ Results on the univariate time series dataset: the KDD21 dataset
 
 <div align=center>
 <img src="imgs\uni_result_new.png" width="50%" />
-</div>
-
-### Explainability
-
-The explainability evaluation results on top 5 performing deep learning methods.
-
-<div align=center>
-<img src="imgs\explain.png">
-</div>
-
-### Robustness
-
-The performance of models under different level of training set contamination
-
-<div align=center>
-<img src="imgs\robustness.png">
 </div>
 
 ### Case study
