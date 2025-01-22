@@ -49,7 +49,6 @@ Download datasets from this link: [ano_dataset](https://drive.google.com/drive/f
 ```
 ├─ano_dataset
 ├───ASD
-├───sate   
 ├───synthetic
 └───UCR
 ```
@@ -61,7 +60,6 @@ Run our model
 
 ```shell
 sh runners\run_asd.sh
-sh runners\run_sate.sh
 sh runners\run_synthetic.sh
 sh runners\run_ucr.sh
 ```
@@ -70,7 +68,6 @@ Run baseline models
 
 ```
 sh runners\run_asd_other.sh
-sh runners\run_sate_other.sh
 sh runners\run_synthetic_other.sh
 sh runners\run_ucr_other.sh
 ```
@@ -81,7 +78,6 @@ For ablation experiments and parameter sensitivity analysis, please refer to the
 
 ```shell
 sh runners\run_asd_ex.sh
-sh runners\run_sate_ex.sh
 sh runners\run_synthetic_ex.sh
 sh runners\run_ucr_ex.sh
 ```
@@ -90,7 +86,6 @@ sh runners\run_ucr_ex.sh
 
 ```shell
 sh runners\run_asd_pollute.sh
-sh runners\run_sate_pollute.sh
 sh runners\run_synthetic_pollute.sh
 sh runners\run_ucr_pollute.sh
 ```
